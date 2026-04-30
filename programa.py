@@ -37,12 +37,14 @@ def generate_primary_index():
     '''
     Gera um arquivo de indices primários ou substitui caso já houver
     '''
+    open("primario.ind", "wb")
 
 def generate_secondary_index(field_index: int):
     '''
     Gera um índice secundário do campo de indice *field_index* em *fields*
     '''
     index_name = fields[field_index] + ".ind"
+    open(index_name, "wb")
 
 def read_registry(file) -> list:
     '''
@@ -62,6 +64,16 @@ def ordered_index_insert(lst: list, id: int, offset: int) -> None:
     conforme o *id* em *lst*
     '''
     pass
+
+def read_instructions(file) -> None:
+    '''
+    percorre o arquivo de instruções *file* e executa as instruções contidas nele
+    '''
+
+def remove_index(index: int) -> None:
+    '''
+    remove o registro de indice *index* de 'games.dat'
+    '''
 
 
 main()

@@ -1,5 +1,8 @@
 import os
 import argparse
+from struct import pack, unpack, calcsize
+
+primary_format = "ii"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-b', '--build', action="store_true", help="Gera novo arquivo de indices")
@@ -9,34 +12,70 @@ parser.add_argument('-c', '--compact', action="store_true", help="Compacta o arq
 args = parser.parse_args()
 
 in_file = open("games.dat", 'rb+')
+primario = None
+genero = None
+publicadora = None
+
 
 fields = ["id", "nome", "ano", "genero", "publicadora", "plataforma"]
 
+primary_index: list = []
+
 def main() -> None:
+    if not args.build:
+        #genero = open("genero.ind", "rb")
+        #publicadora = open("publicadora.ind", "rb")
+        pass
+
     if args.build:
         print('-- Construindo índice --')
+        generate_indexes()
         print('-- Índice construído --')
-        a = read_registry(in_file)
-        while a != []:
-            print(a)
-            a = read_registry(in_file)
+        
     elif args.execute:
-        print("-- arquivo de instruções: "+ str(args.execute) + " aberto --")
-    if args.compact:
+        print("-- Arquivo de instruções: "+ str(args.execute) + " aberto --")
+        primary_index = load_primary_index()
+        print("-- Instruções concluídas --")
+    elif args.compact:
         print("-- Compactando arquivo --")
         print("-- Arquivo compactado --")
     
 
 def generate_indexes() -> None:
     '''
-    Gera arquívos de índices ou sobrescreve os atuais
+    Gera os arquívos de índices ou sobrescreve os atuais
     '''
-    pass
+    generate_primary_index()
+
 
 def generate_primary_index():
     '''
     Gera um arquivo de indices primários ou substitui caso já houver
     '''
+    primario = open("primario.ind", "wb+")
+    reg = ['buxa']
+    while reg != []:
+        offset = in_file.seek(0, os.SEEK_CUR)
+        reg = read_registry(in_file)
+        if reg:
+            ordered_index_insert(primary_index, int(reg[0]), offset)
+    for idx in primary_index:
+        primario.write(pack(primary_format, idx[0], idx[1]))
+
+def load_primary_index() -> list[tuple]:
+    '''
+    carrega o arquivo *primario.ind* em uma lista de tuplas em formato 
+    *(indice, byte-offset)* e retorna ela
+    '''
+    primary_list = []
+    primario =  open("primario.ind", "rb")
+    idx_bytes = primario.read(calcsize(primary_format))
+    while idx_bytes:
+        idx = unpack(primary_format, idx_bytes)
+        primary_list.append(idx)
+        idx_bytes = primario.read(calcsize(primary_format))
+    return primary_list
+
 
 def generate_secondary_index(field_index: int):
     '''
@@ -58,10 +97,11 @@ def read_registry(file) -> list:
 
 def ordered_index_insert(lst: list, id: int, offset: int) -> None:
     '''
-    Insere um índice (uma string no formato "*id|byte-offset*") de forma ordenada
+    Insere um índice na forma de tupla (*id*, *offset*) de forma ordenada
     conforme o *id* em *lst*
     '''
-    pass
+    #PROVISORIO
+    lst.append((id, offset))
 
 
 main()

@@ -82,6 +82,7 @@ def generate_secondary_index(field_index: int):
     Gera um índice secundário do campo de indice *field_index* em *fields*
     '''
     index_name = fields[field_index] + ".ind"
+    open(index_name, "wb")
 
 def read_registry(file) -> list:
     '''

@@ -3,7 +3,6 @@ import argparse
 from struct import pack, unpack, calcsize
 
 primary_format = "ii"
-secondary_format = "si"
 reverse_format = "iii"
 
 parser = argparse.ArgumentParser()
@@ -35,9 +34,9 @@ def main() -> None:
     elif args.execute:
         print("-- Arquivo de instruções: "+ str(args.execute) + ".txt aberto --")
         load_indexes()
-        print(primary_index)
+        #print(primary_index)
         print(lista_inversa)
-        print(genero_index)
+        #print(genero_index)
         print(publicadora_index)
         print("-- Instruções concluídas --")
     elif args.compact:
@@ -50,6 +49,12 @@ def execute(filename: str) -> None:
     '''
     Recebe o nome de um arquivo de texto e realiza as operações contidas nele
     '''
+
+def interpretate(operat: str):
+    '''
+    interpreta a operação descrita em *operat* e realiza a função de acordo
+    '''
+    pass
 
 def id_search(id: int) -> list[str|None]:
     '''
@@ -153,10 +158,11 @@ def add_to_inversa(pos: int, field: int, id: int) -> None:
     '''
     next = field -2
     item = lista_inversa[pos]
+    print(item)
     if item[next] == -1:
         a = add_inversa_single(id)
         new_tup = [item[0], item[1], item[2]]
-        new_tup[next] = a -1 
+        new_tup[next] = a
         lista_inversa[pos] = (new_tup[0], new_tup[1], new_tup[2])
     else:
         add_to_inversa(item[next], next + 2, id)
